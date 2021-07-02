@@ -17,7 +17,6 @@ from .models import User, Article
 @api_view(['GET'])
 def get_articles(request, type):
     articles = Article.objects.filter(visible=True, type=type)
-    print(articles)
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
     # return Response('True return')
