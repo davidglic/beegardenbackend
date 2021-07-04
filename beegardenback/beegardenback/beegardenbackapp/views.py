@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.serializers import Serializer
-from .serializers import ArticleSerializer, UserSerializer
+from .serializers import ArticleSerializer, UserSerializer, NewUserSerializer
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from rest_framework.response import Response
@@ -46,10 +46,31 @@ def login(request):
         return Response({'error': "Password Mismatch."})
 
     
-
-
-
 @api_view(['POST'])
+def create_user(request):
+    parsed_body = request.body.decode('utf-8')
+    parsed_body = json.loads(parsed_body)
+    #check for created user
+    try:
+        user = User.objects.get(email=parsed_body['email'])
+        
+    except:
+        user = None
+
+    # Bounce back if email is in db
+    if user != None:
+        return Response({'error': "Email already registered."}, status=status.HTTP_409_CONFLICT)
+
+    
+    serializer = NewUserSerializer(data=parsed_body)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['POST', 'DELETE'])
 def update_user(request):
     # takes email, pw, object to be changed and new value
     # {email: '', password: '', object: 'email, zipcode, gardenarea, newsletter, password', new: ''}
@@ -67,6 +88,15 @@ def update_user(request):
     
     #validate user
     if user.password == parsed_body['password']:
+        print("user validated.")
+        #delete user
+        print(request.method)
+        if request.method == 'DELETE':
+            print("delete recognized")
+            # user.objects.delete()
+            User.objects.get(email=parsed_body['email']).delete()
+            return Response({'Message': "User Deleted."})
+        
         #update user
         if parsed_body['object'] == "email":
             user.email = parsed_body['new']
@@ -92,4 +122,6 @@ def update_user(request):
         return Response(serializer.data)
     else:
         return Response({'error': "Password Mismatch."})
+
+    
 
