@@ -24,6 +24,14 @@ def get_articles(request, type):
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def get_an_article(request, id):
+    print('get an article')
+    print(id)
+    article = Article.objects.get(visible=True, id=id)
+    serializer = ArticleSerializer(article)
+    return Response(serializer.data)
+
 @api_view(['PUT'])
 def login(request):
     #take body and parse to dict
