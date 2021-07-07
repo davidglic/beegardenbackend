@@ -10,6 +10,8 @@ import json
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 
+from .tokens import create_token, decode_token
+
 
 from .models import User, Article
 
@@ -41,15 +43,22 @@ def login(request):
     # pull up user
     try:
         user = User.objects.get(email=parsed_body['email'])
-        serializer = UserSerializer(user)
+        
     except:
         user = None
         return Response({'error': "Invalid User ID."})
     
     #validate user
     if user.password == parsed_body['password']:
-        #return user
-        return Response(serializer.data)
+        new = {
+          'email': user.email,
+          'id': user.id,
+          'zipcode': user.zipcode,
+          'gardenarea': user.gardenarea,
+          'newsletter': user.newsletter,
+          'token': create_token(user.id)
+        }
+        return Response(new)
     else:
         return Response({'error': "Password Mismatch."})
 

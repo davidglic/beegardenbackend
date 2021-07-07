@@ -67,6 +67,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000'
 ]
 
+JWT_TOKENS = {
+    # in minutes
+    'timeout': 15,
+    'key': 'thisisasecret'
+}
+
 # REST_FRAMEWORK = {
 #     # Use Django's standard `django.contrib.auth` permissions,
 #     # or allow read-only access for unauthenticated users.
