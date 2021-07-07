@@ -82,7 +82,17 @@ def create_user(request):
     serializer = NewUserSerializer(data=parsed_body)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        new_user = User.objects.get(email=parsed_body['email'])
+        new_serial = {
+          'email': new_user.email,
+          'id': new_user.id,
+          'zipcode': new_user.zipcode,
+          'gardenarea': new_user.gardenarea,
+          'newsletter': new_user.newsletter,
+          'token': create_token(new_user.id)
+        }
+        return Response(new_serial, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -104,8 +114,11 @@ def update_user(request):
         return Response({'error': "Invalid User ID."})
     
     #validate user
-    if user.password == parsed_body['password']:
-        print("user validated.")
+    # if user.password == parsed_body['password']:
+    #     print("user validated.")
+    
+    token_bool, cargo = decode_token(parsed_body['token'])
+    if token_bool and cargo['user'] == user.id:
         #delete user
         print(request.method)
         if request.method == 'DELETE':
@@ -135,8 +148,16 @@ def update_user(request):
             return Response({'error': "Invalid User Edit Request."})
 
         updated_user = user.save()
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        new = {
+          'email': user.email,
+          'id': user.id,
+          'zipcode': user.zipcode,
+          'gardenarea': user.gardenarea,
+          'newsletter': user.newsletter,
+          'token': parsed_body['token']
+        }
+        
+        return Response(new)
     else:
         return Response({'error': "Password Mismatch."})
 

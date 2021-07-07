@@ -17,7 +17,7 @@ def create_token(userid):
 def decode_token(token):
     try:
         decoded_token = jwt.decode(token, key, algorithms=["HS256"])
-        return(True, decoded_token)
+        return (True, decoded_token)
     except Exception as err:
         return (False, err)
 
