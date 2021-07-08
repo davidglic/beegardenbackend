@@ -24,15 +24,18 @@ from .models import User, Article
 def get_articles(request, type):
     articles = Article.objects.filter(visible=True, type=type)
     serializer = ArticleSerializer(articles, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_an_article(request, id):
     print('get an article')
     print(id)
-    article = Article.objects.get(visible=True, id=id)
-    serializer = ArticleSerializer(article)
-    return Response(serializer.data)
+    try:
+        article = Article.objects.get(visible=True, id=id)
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except:
+        return Response({'error': "Article not found."}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['PUT'])
 def login(request):
@@ -46,7 +49,7 @@ def login(request):
         
     except:
         user = None
-        return Response({'error': "Invalid User ID."})
+        return Response({'error': "Invalid User ID."}, status=status.HTTP_401_UNAUTHORIZED)
     
     #validate user
     if user.password == parsed_body['password']:
@@ -58,9 +61,9 @@ def login(request):
           'newsletter': user.newsletter,
           'token': create_token(user.id)
         }
-        return Response(new)
+        return Response(new, status=status.HTTP_200_OK)
     else:
-        return Response({'error': "Password Mismatch."})
+        return Response({'error': "Password Mismatch."}, status=status.HTTP_403_FORBIDDEN)
 
     
 @api_view(['POST'])
@@ -76,7 +79,7 @@ def create_user(request):
 
     # Bounce back if email is in db
     if user != None:
-        return Response({'error': "Email already registered."}, status=status.HTTP_409_CONFLICT)
+        return Response({'error': "Email already registered."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     
     serializer = NewUserSerializer(data=parsed_body)
@@ -145,7 +148,7 @@ def update_user(request):
             
         else:
             print('invalid')
-            return Response({'error': "Invalid User Edit Request."})
+            return Response({'error': "Invalid User Edit Request."}, status=status.HTTP_400_BAD_REQUEST)
 
         updated_user = user.save()
         new = {
@@ -157,9 +160,9 @@ def update_user(request):
           'token': parsed_body['token']
         }
         
-        return Response(new)
+        return Response(new, status=status.HTTP_200_OK)
     else:
-        return Response({'error': "Password Mismatch."})
+        return Response({'error': "Invalid Authorization Token."}, status=status.HTTP_401_UNAUTHORIZED)
 
     
 
