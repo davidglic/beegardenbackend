@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'beegardenbackapp',
     'rest_framework',
     'corsheaders',
+    'emailbot',
 
 ]
 
