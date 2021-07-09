@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.query import ValuesListIterable
 
+
 # Create your models here.
 
 class Article(models.Model):
@@ -27,6 +28,8 @@ class User(models.Model):
     gardenarea = models.PositiveSmallIntegerField()
     newsletter = models.BooleanField()
     password = models.CharField(max_length=100)
+    verified = models.BooleanField(default=False, blank=False)
+    created = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.email

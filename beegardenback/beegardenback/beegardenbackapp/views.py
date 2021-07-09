@@ -59,7 +59,9 @@ def login(request):
           'zipcode': user.zipcode,
           'gardenarea': user.gardenarea,
           'newsletter': user.newsletter,
-          'token': create_token(user.id)
+          'token': create_token(user.id),
+          'verified': user.verified,
+          'created': user.created
         }
         return Response(new, status=status.HTTP_200_OK)
     else:
@@ -93,7 +95,9 @@ def create_user(request):
           'zipcode': new_user.zipcode,
           'gardenarea': new_user.gardenarea,
           'newsletter': new_user.newsletter,
-          'token': create_token(new_user.id)
+          'token': create_token(new_user.id),
+          'verified': new_user.verified,
+          'created': new_user.created
         }
         return Response(new_serial, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -157,7 +161,9 @@ def update_user(request):
           'zipcode': user.zipcode,
           'gardenarea': user.gardenarea,
           'newsletter': user.newsletter,
-          'token': parsed_body['token']
+          'token': parsed_body['token'],
+          'verified': user.verified,
+          'created': user.created
         }
         
         return Response(new, status=status.HTTP_200_OK)

@@ -10,12 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'email', 'zipcode', 'gardenarea', 'newsletter',)
+        fields = ('id', 'email', 'zipcode', 'gardenarea', 'newsletter', 'verified', 'created')
 
 
 class NewUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'email', 'zipcode', 'gardenarea', 'newsletter', 'password')
+        fields = ('id', 'email', 'zipcode', 'gardenarea', 'newsletter', 'password', 'verified', 'created')
 
