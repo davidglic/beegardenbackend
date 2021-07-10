@@ -170,5 +170,32 @@ def update_user(request):
     else:
         return Response({'error': "Invalid Authorization Token."}, status=status.HTTP_401_UNAUTHORIZED)
 
-    
+
+from django.db.models import Sum, Avg
+@api_view(['GET'])
+def get_info(request, id):
+    #search user and vertoken
+    try: 
+        print(id)
+        user = User.objects.get(id=id)
+        print(user.zipcode)
+        print(type(user.zipcode))
+        gardens = User.objects.filter(zipcode=user.zipcode)
+        print(gardens.aggregate(Sum('gardenarea')))
+        all_gardens = User.objects.all()
+        response = {
+            'created': user.created,
+            'zipcode': user.zipcode,
+            'gardenarea': user.gardenarea,
+            'gardencount_local': gardens.count(),
+            'totalsqft_local': gardens.aggregate(Sum('gardenarea'))['gardenarea__sum'],
+            'avgsqft_local': gardens.aggregate(Avg('gardenarea'))['gardenarea__avg'],
+            'gardencount_total': all_gardens.count(),
+            'totalsqft_total': all_gardens.aggregate(Sum('gardenarea'))['gardenarea__sum'],
+            'avgsqft_total': all_gardens.aggregate(Avg('gardenarea'))['gardenarea__avg']
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    except:
+        return Response({'error': "No garden exists with this ID."}, status=status.HTTP_400_BAD_REQUEST)
+        
 

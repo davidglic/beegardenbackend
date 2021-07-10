@@ -67,3 +67,5 @@ def accept_verification(request):
     else:
         return Response({'error': "Invalid Verification Token."}, status=status.HTTP_401_UNAUTHORIZED)
     
+
+    

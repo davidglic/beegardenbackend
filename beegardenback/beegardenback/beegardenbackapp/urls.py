@@ -6,5 +6,6 @@ urlpatterns = [
     path('articles/get/<int:id>', views.get_an_article),
     path('login/', views.login),
     path('update/', views.update_user),
-    path('create/', views.create_user)
+    path('create/', views.create_user),
+    path('garden/<int:id>', views.get_info)
     ]
