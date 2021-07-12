@@ -84,6 +84,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'littlebeegardens@gmail.com'
 EMAIL_HOST_PASSWORD = secrets.email_pw
 
+#secrets
+SALT = secrets.salt
 
 ROOT_URLCONF = 'beegardenback.urls'
 

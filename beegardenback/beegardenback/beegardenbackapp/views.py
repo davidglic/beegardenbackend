@@ -11,8 +11,8 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 
 from .tokens import create_token, decode_token
-
-
+import hashlib
+from django.conf import settings
 from .models import User, Article
 
 # # Create your views here.
@@ -42,6 +42,8 @@ def login(request):
     #take body and parse to dict
     parsed_body = request.body.decode('utf-8')
     parsed_body = json.loads(parsed_body)
+    salt = settings.SALT
+    print(salt)
 
     # pull up user
     try:
@@ -52,7 +54,10 @@ def login(request):
         return Response({'error': "Invalid User ID."}, status=status.HTTP_401_UNAUTHORIZED)
     
     #validate user
-    if user.password == parsed_body['password']:
+    salted_pw = parsed_body['password'] + settings.SALT
+    hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
+    if user.password == hashed_pw:
+    # if user.password == parsed_body['password']:
         new = {
           'email': user.email,
           'id': user.id,
@@ -83,8 +88,12 @@ def create_user(request):
     if user != None:
         return Response({'error': "Email already registered."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    
-    serializer = NewUserSerializer(data=parsed_body)
+    #hash password
+    salted_pw = parsed_body['password'] + settings.SALT
+    hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
+    parsed_body['password'] = hashed_pw
+
+    serializer = NewUserSerializer(data=parsed_body) 
     if serializer.is_valid():
         serializer.save()
         
@@ -148,11 +157,18 @@ def update_user(request):
             user.newsletter = parsed_body['new']
             
         elif parsed_body['object'] == "password":
-            if parsed_body['password'] == user.password:
-                user.password = parsed_body['new']
+            print(parsed_body)
+            salted_pw = parsed_body['password'] + settings.SALT
+            hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
+            if hashed_pw == user.password:
+                salted_new = parsed_body['new'] + settings.SALT
+                hashed_new = hashlib.sha256(salted_new.encode()).hexdigest()
+                user.password = hashed_new
+                # user.password = parsed_body['new']
+                
             else:
                 return Response({'error': "Password Mismatch."}, status=status.HTTP_403_FORBIDDEN)
-            
+
         else:
             print('invalid')
             return Response({'error': "Invalid User Edit Request."}, status=status.HTTP_400_BAD_REQUEST)

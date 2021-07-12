@@ -39,7 +39,7 @@ def send_verification(request, id):
         'Test Email Subject',
         'Verification code: ' + str(vertoken['vertoken']),
         'settings.EMAIL_HOST_USER',
-        ['bluedragon_1_4@yahoo.com'],
+        [user.email],
         fail_silently=False,
         )
     return Response({'message': 'Verification E-mail Sent.'}, status=status.HTTP_200_OK)
