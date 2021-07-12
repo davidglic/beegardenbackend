@@ -148,7 +148,10 @@ def update_user(request):
             user.newsletter = parsed_body['new']
             
         elif parsed_body['object'] == "password":
-            user.password = parsed_body['new']
+            if parsed_body['password'] == user.password:
+                user.password = parsed_body['new']
+            else:
+                return Response({'error': "Password Mismatch."}, status=status.HTTP_403_FORBIDDEN)
             
         else:
             print('invalid')
