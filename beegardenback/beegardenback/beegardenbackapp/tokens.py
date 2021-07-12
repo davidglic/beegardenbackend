@@ -1,10 +1,11 @@
 import jwt
 import datetime
+from django.conf import settings
 
-
-# settings
-lifespan = 15
-key = 'asecret'
+# Settings
+# please change settings in settings.py
+lifespan = settings.JWT_TOKENS['timeout']
+key = settings.JWT_TOKENS['key']
 
 def create_token(userid):
     token = jwt.encode({
@@ -21,7 +22,3 @@ def decode_token(token):
     except Exception as err:
         return (False, err)
 
-# test = create_token(3)
-# print(test)
-# print(decode_token('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjozLCJleHAiOjE2MjU2OTAwMjV9.sS2n-ujwv_PwTSfjfmk_Me3rQ88QEps32Hy88AQ4l3c'))
-# print(decode_token(test))

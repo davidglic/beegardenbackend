@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@z(u8cab==+@c_ra3c-y$ct%26&ah162=u^%&r@la-k_q+$o%0'
+SECRET_KEY = secrets.secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -72,7 +72,7 @@ CORS_ALLOWED_ORIGINS = [
 JWT_TOKENS = {
     # in minutes
     'timeout': 15,
-    'key': 'thisisasecret'
+    'key': secrets.JWT_key
 }
 
 # Email Settings:

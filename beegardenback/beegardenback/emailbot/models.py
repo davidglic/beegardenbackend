@@ -5,7 +5,6 @@ from django.apps import apps
 
 from beegardenbackapp.models import User
 
-
 class VerToken(models.Model):
     email = models.CharField(max_length=100)
     vertoken = models.IntegerField()

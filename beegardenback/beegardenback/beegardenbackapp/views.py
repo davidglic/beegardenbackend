@@ -1,31 +1,24 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework.serializers import Serializer
+
 from .serializers import ArticleSerializer, UserSerializer, NewUserSerializer
 from rest_framework.decorators import api_view
-from rest_framework import generics
 from rest_framework.response import Response
-from django.http import JsonResponse
 import json
 from rest_framework import status
-from rest_framework.parsers import JSONParser
-
 from .tokens import create_token, decode_token
 import hashlib
 from django.conf import settings
 from .models import User, Article
 
-# # Create your views here.
-# class get_articles(generics.ListCreateAPIView):
-#     queryset = Article.objects.all()
-#     serializer_class = ArticleSerializer
-
+# GET articles/<str:type>/ 
+# return all articles that aer visible=True with <str:type>
 @api_view(['GET'])
 def get_articles(request, type):
     articles = Article.objects.filter(visible=True, type=type)
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+# GET articles/get/<int:id>
+# return article with <int:id>
 @api_view(['GET'])
 def get_an_article(request, id):
     print('get an article')
@@ -37,14 +30,15 @@ def get_an_article(request, id):
     except:
         return Response({'error': "Article not found."}, status=status.HTTP_404_NOT_FOUND)
 
+# PUT login/
+# Login user. with body {email: str, password: str}
 @api_view(['PUT'])
 def login(request):
     #take body and parse to dict
     parsed_body = request.body.decode('utf-8')
     parsed_body = json.loads(parsed_body)
     salt = settings.SALT
-    print(salt)
-
+    
     # pull up user
     try:
         user = User.objects.get(email=parsed_body['email'])
@@ -57,7 +51,6 @@ def login(request):
     salted_pw = parsed_body['password'] + settings.SALT
     hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
     if user.password == hashed_pw:
-    # if user.password == parsed_body['password']:
         new = {
           'email': user.email,
           'id': user.id,
@@ -72,7 +65,8 @@ def login(request):
     else:
         return Response({'error': "Password Mismatch."}, status=status.HTTP_403_FORBIDDEN)
 
-    
+# POST create/
+# create user with body: {email: str, password: str, newsleter: bool, gardenarea: int, zipcode: int}
 @api_view(['POST'])
 def create_user(request):
     parsed_body = request.body.decode('utf-8')
@@ -93,10 +87,12 @@ def create_user(request):
     hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
     parsed_body['password'] = hashed_pw
 
+    # Serialize and save.
     serializer = NewUserSerializer(data=parsed_body) 
     if serializer.is_valid():
         serializer.save()
         
+        # create new object with token user info to return to frontend.
         new_user = User.objects.get(email=parsed_body['email'])
         new_serial = {
           'email': new_user.email,
@@ -112,31 +108,32 @@ def create_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-
+# POST/DELETE update/
+# takes email, pw, object to be changed and new value with body:
+# {object: '', email: '', zipcode: '', gardenarea: '', newsletter: '', password: '', new: variable}
 @api_view(['POST', 'DELETE'])
 def update_user(request):
-    # takes email, pw, object to be changed and new value
-    # {email: '', password: '', object: 'email, zipcode, gardenarea, newsletter, password', new: ''}
+    
     #take body and parse to dict
     parsed_body = request.body.decode('utf-8')
     parsed_body = json.loads(parsed_body)
 
-    # pull up user
+    # Pull up user --return error if userID invalid.
     try:
         user = User.objects.get(email=parsed_body['email'])
         
     except:
         user = None
-        return Response({'error': "Invalid User ID."})
+        return Response({'error': "Invalid User ID."}, status=status.HTTP_400_BAD_REQUEST)
     
     #validate user
-    # if user.password == parsed_body['password']:
-    #     print("user validated.")
-    
+    # decode token
     token_bool, cargo = decode_token(parsed_body['token'])
+
+    # verify requesting user is target user.
     if token_bool and cargo['user'] == user.id:
+        
         #delete user
-        print(request.method)
         if request.method == 'DELETE':
             print("delete recognized")
             # user.objects.delete()
@@ -157,23 +154,25 @@ def update_user(request):
             user.newsletter = parsed_body['new']
             
         elif parsed_body['object'] == "password":
-            print(parsed_body)
+            
+            # verify current password 
             salted_pw = parsed_body['password'] + settings.SALT
             hashed_pw = hashlib.sha256(salted_pw.encode()).hexdigest()
             if hashed_pw == user.password:
+                # hash new password and update user object
                 salted_new = parsed_body['new'] + settings.SALT
                 hashed_new = hashlib.sha256(salted_new.encode()).hexdigest()
                 user.password = hashed_new
-                # user.password = parsed_body['new']
-                
             else:
                 return Response({'error': "Password Mismatch."}, status=status.HTTP_403_FORBIDDEN)
 
         else:
-            print('invalid')
             return Response({'error': "Invalid User Edit Request."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Save user.
         updated_user = user.save()
+
+        # build new object for response data.
         new = {
           'email': user.email,
           'id': user.id,
@@ -189,18 +188,15 @@ def update_user(request):
     else:
         return Response({'error': "Invalid Authorization Token."}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+# GET /garden/<int:id>
+# get garden by user ID and return statistical info for public page.
 from django.db.models import Sum, Avg
 @api_view(['GET'])
 def get_info(request, id):
-    #search user and vertoken
+    #search user and garden data
     try: 
-        print(id)
         user = User.objects.get(id=id)
-        print(user.zipcode)
-        print(type(user.zipcode))
         gardens = User.objects.filter(zipcode=user.zipcode)
-        print(gardens.aggregate(Sum('gardenarea')))
         all_gardens = User.objects.all()
         response = {
             'created': user.created,

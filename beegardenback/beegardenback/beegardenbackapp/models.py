@@ -18,6 +18,8 @@ class Article(models.Model):
     # thumbnail= thumbnail image url for preview
     # description = short description to be viewed on preview.
     # visible = api will only send out visible articles
+    # verified = status of email verification, starts as false.
+    # created = date that account/garden was created
 
     def __str__(self):
         return self.title
