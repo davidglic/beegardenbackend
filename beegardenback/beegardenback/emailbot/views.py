@@ -36,7 +36,7 @@ def send_verification(request, id):
 
     #send code to member.
     send_mail(
-        'Test Email Subject',
+        'Little Bee Gardens: E-mail verification code',
         'Verification code: ' + str(vertoken['vertoken']),
         'settings.EMAIL_HOST_USER',
         [user.email],
