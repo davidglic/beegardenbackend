@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 # from . import secrets
 import os
-import django_heroku
+# import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,8 +65,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 JWT_TOKENS = os.getenv('JWT_TOKENS', {'timeout': 15, 'key': "adummykeyhere115"})
-{'timeout': 15, 'key': "adummykeyhere115"
-}
+# {'timeout': 15, 'key': "adummykeyhere115"
+# }
 
 # Email Settings:
 
@@ -106,6 +106,7 @@ WSGI_APPLICATION = 'beegardenback.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# dev environ setting
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -165,3 +166,7 @@ SESSION_COOKIE_SECURE = False
 
 # Activate Django-Heroku.
 # django_heroku.settings(locals())
+
+# production DB info
+import dj_database_url
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
