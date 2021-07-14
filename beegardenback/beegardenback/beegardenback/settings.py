@@ -64,7 +64,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000'
 ]
 
-JWT_TOKENS = os.getenv('JWT_TOKENS', {'timeout': 15, 'key': "adummykeyhere115"})
+JWT_TOKENS = os.getenv('JWT_TOKENS', 'adummykeyhere115')
 # {'timeout': 15, 'key': "adummykeyhere115"
 # }
 

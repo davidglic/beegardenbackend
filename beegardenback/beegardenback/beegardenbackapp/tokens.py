@@ -4,8 +4,8 @@ from django.conf import settings
 
 # Settings
 # please change settings in settings.py
-lifespan = settings.JWT_TOKENS['timeout']
-key = settings.JWT_TOKENS['key']
+lifespan = 15
+key = settings.JWT_TOKENS
 
 def create_token(userid):
     token = jwt.encode({
