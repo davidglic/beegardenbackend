@@ -1,1 +1,1 @@
-web: python beegardenback/beegardenback/manage.py runserver 80
+web: python beegardenback/beegardenback/manage.py runserver $PORT
