@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from . import secrets
+# from . import secrets
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -75,7 +75,8 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'littlebeegardens@gmail.com'
 # EMAIL_HOST_PASSWORD = secrets.email_pw
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', secrets.email_pw)
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', secrets.email_pw)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', "none")
 #secrets
 # SALT = secrets.salt
 SALT = os.getenv('SALT', '456kjn3498weklnj23589')
