@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 # from . import secrets
 import os
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # 'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
     'beegardenbackapp',
     'rest_framework',
     'corsheaders',
@@ -153,6 +154,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -160,3 +162,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SECURE = False
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
