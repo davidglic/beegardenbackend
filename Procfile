@@ -1,1 +1,1 @@
-web: python beegardenback/beegardenback/manage.py runserver
+web: python beegardenback/beegardenback/manage.py runserver 80
