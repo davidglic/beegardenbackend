@@ -15,7 +15,7 @@ from .models import User, VerToken
 # Create your views here.
 @api_view(['PUT'])
 def send_verification(request, id):
-    print('Sending verification email for user: ' + str(id))
+    
     # query user and check if already verified.
     try: 
         user = User.objects.get(id=id)

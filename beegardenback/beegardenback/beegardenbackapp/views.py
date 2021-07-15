@@ -21,8 +21,7 @@ def get_articles(request, type):
 # return article with <int:id>
 @api_view(['GET'])
 def get_an_article(request, id):
-    print('get an article')
-    print(id)
+    
     try:
         article = Article.objects.get(visible=True, id=id)
         serializer = ArticleSerializer(article)
@@ -135,7 +134,7 @@ def update_user(request):
         
         #delete user
         if request.method == 'DELETE':
-            print("delete recognized")
+
             # user.objects.delete()
             User.objects.get(email=parsed_body['email']).delete()
             return Response({'Message': "User Deleted."})
