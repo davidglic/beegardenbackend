@@ -63,7 +63,6 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://rebel-friends.surge.sh',
-    'surge.sh'
 ]
 
 JWT_TOKENS = os.getenv('JWT_TOKENS', 'adummykeyhere115')
